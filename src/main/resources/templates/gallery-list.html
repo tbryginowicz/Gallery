@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>My Galleries</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+        }
+        .header {
+            background: #667eea;
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .header h1 {
+            font-size: 24px;
+        }
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        .welcome {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .galleries-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .gallery-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        .gallery-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .gallery-card h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 20px;
+        }
+        .gallery-card p {
+            color: #666;
+            font-size: 14px;
+        }
+        .no-galleries {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+        .no-galleries h2 {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <h1>📸 My Galleries</h1>
+    <div>
+        <span th:text="'Welcome, ' + ${username}">Welcome, User</span>
+        <a th:href="@{/logout}" class="logout-btn">Logout</a>
+    </div>
+</div>
+
+<div class="container">
+    <div class="welcome">
+        <h2>Your Photo Galleries</h2>
+        <p>Click on a gallery to view your photos</p>
+    </div>
+    <div th:if="${!galleries.isEmpty()}" class="galleries-grid">
+        <a th:each="gallery : ${galleries}"
+           th:href="@{/gallery/{id}(id=${gallery.id})}"
+           class="gallery-card">
+            <h3 th:text="${gallery.name}">Gallery Name</h3>
+            <p th:text="${gallery.photoCount} + ' photos'">0 photos</p>
+        </a>
+    </div>
+    <!--no galleries-->
+    <div th:if="${galleries.isEmpty()}" class="no-galleries">
+        <h2>No galleries yet</h2>
+        <p>Contact admin to create a gallery for you</p>
+    </div>
+</div>
+</body>
+</html>

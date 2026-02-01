@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Panel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+        }
+        .header {
+            background: #e74c3c;
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .header h1 {
+            font-size: 24px;
+        }
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        .section {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e74c3c;
+            padding-bottom: 10px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: bold;
+        }
+        input[type="text"],
+        input[type="password"],
+        input[type="file"],
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        input[type="checkbox"] {
+            margin-right: 5px;
+        }
+        button {
+            background: #e74c3c;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #c0392b;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background: #f8f9fa;
+            color: #333;
+            font-weight: bold;
+        }
+        tr:hover {
+            background: #f8f9fa;
+        }
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .badge-admin {
+            background: #e74c3c;
+            color: white;
+        }
+        .badge-user {
+            background: #3498db;
+            color: white;
+        }
+        .gallery-info {
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <h1>🔧 Admin Panel</h1>
+    <a th:href="@{/logout}" class="logout-btn">Logout</a>
+</div>
+
+<div class="container">
+    <div class="section">
+        <h2>Create New User</h2>
+        <form th:action="@{/admin/user/create}" method="post">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" name="isAdmin" value="true">
+                    Admin user
+                </label>
+            </div>
+            <button type="submit">Create User</button>
+        </form>
+    </div>
+
+    <div class="section">
+        <h2>Users</h2>
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Role</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="user : ${users}">
+                <td th:text="${user.id}">1</td>
+                <td th:text="${user.username}">username</td>
+                <td>
+                    <span th:if="${user.admin}" class="badge badge-admin">ADMIN</span>
+                    <span th:unless="${user.admin}" class="badge badge-user">USER</span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>Create Gallery</h2>
+        <form th:action="@{/admin/gallery/create}" method="post">
+            <div class="form-group">
+                <label for="galleryName">Gallery Name</label>
+                <input type="text" id="galleryName" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="userId">Assign to User</label>
+                <select id="userId" name="userId" required>
+                    <option value="">Select user...</option>
+                    <option th:each="user : ${users}"
+                            th:value="${user.id}"
+                            th:text="${user.username}">Username</option>
+                </select>
+            </div>
+            <button type="submit">Create Gallery</button>
+        </form>
+    </div>
+
+    <div class="section">
+    <h2>Upload Photos</h2>
+    <form th:action="@{/admin/photo/upload}" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="galleryId">Gallery</label>
+            <select id="galleryId" name="galleryId" required>
+                <option value="">Select gallery...</option>
+                <option th:each="gallery : ${allGalleries}"
+                        th:value="${gallery.id}"
+                        th:text="${gallery.name + ' (' + gallery.ownerUsername + ')'}">
+                    Gallery Name (Owner)
+                </option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="files">Photo Files (select multiple)</label>
+            <input type="file" id="files" name="files" accept="image/*" multiple required onchange="updateFileCount(this)">
+            <div class="file-count" id="fileCount">No files selected</div>
+        </div>
+        <button type="submit">Upload Photos</button>
+    </form>
+</div>
+</div>
+
+<script>
+    function updateFileCount(input) {
+        const count = input.files.length;
+        const countDiv = document.getElementById('fileCount');
+        if (count === 0) {
+            countDiv.textContent = 'No files selected';
+        } else if (count === 1) {
+            countDiv.textContent = '1 file selected';
+        } else {
+            countDiv.textContent = count + ' files selected';
+        }
+    }
+</script>
+</body>
+</html>
