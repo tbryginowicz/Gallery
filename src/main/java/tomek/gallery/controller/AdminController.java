@@ -5,6 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import tomek.gallery.dto.GalleryDTO;
 import tomek.gallery.dto.UserDTO;
 import tomek.gallery.entity.Gallery;
@@ -43,8 +44,20 @@ public class AdminController {
     @PostMapping("/user/create")
     public String createUser(@RequestParam String username,
                              @RequestParam String password,
-                             @RequestParam(defaultValue = "false") boolean isAdmin) {
-        userService.createUser(username, password, isAdmin);
+                             @RequestParam(defaultValue = "false") boolean isAdmin,
+                             RedirectAttributes redirectAttributes) {
+        try{
+            if (userService.findByUsername(username) != null) {
+                redirectAttributes.addFlashAttribute("error", "User '" + username + "' already exists");
+                return "redirect:/admin";
+            }
+            userService.createUser(username, password, isAdmin);
+            redirectAttributes.addFlashAttribute("success", "User '" + username + "' created successfully");
+
+        }
+        catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Failed to create user: " + e.getMessage());
+        }
         return "redirect:/admin";
     }
 

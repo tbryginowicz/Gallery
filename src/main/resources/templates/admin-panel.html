@@ -122,10 +122,6 @@
             background: #3498db;
             color: white;
         }
-        .gallery-info {
-            font-size: 12px;
-            color: #666;
-        }
     </style>
 </head>
 <body>
@@ -224,6 +220,14 @@
 </div>
 
 <script>
+    let successMessage = "[[${success}]]";
+    if (successMessage && successMessage !== "") {
+        alert(successMessage);
+    }
+    let errorMessage = "[[${error}]]";
+    if (errorMessage && errorMessage !== "") {
+        alert(errorMessage);
+    }
     function updateFileCount(input) {
         const count = input.files.length;
         const countDiv = document.getElementById('fileCount');
